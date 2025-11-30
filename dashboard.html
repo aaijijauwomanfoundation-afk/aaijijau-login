@@ -1,19 +1,42 @@
-import { supabase } from "./supabase.js";
+import React, { useEffect, useState } from "react";
+import { supabase } from "./supabase";
 
-const { data } = await supabase.auth.getSession();
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
 
-if (!data.session) {
-  window.location.href = "https://aaijijau-login.onrender.com/dashboard.html "
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        window.location.href = "/"; // login नसेल तर login ला परत जा
+      } else {
+        setUser(data.session.user);
+      }
+    };
+    checkSession();
+  }, []);
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    localStorage.clear();
+    window.location.href = "/"; // logout नंतर login ला जा
+  };
+
+  return (
+    <div className="p-6 bg-black h-screen text-white">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl">Welcome, {user?.email}</h2>
+        <button onClick={logout} className="bg-red-600 px-5 py-2 rounded">
+          Logout
+        </button>
+      </div>
+
+      <div className="mt-10 grid grid-cols-2 gap-6">
+        <div className="bg-gray-800 p-4 rounded-lg">CSR Funding</div>
+        <div className="bg-gray-800 p-4 rounded-lg">Reports</div>
+        <div className="bg-gray-800 p-4 rounded-lg">Beneficiaries</div>
+        <div className="bg-gray-800 p-4 rounded-lg">Settings</div>
+      </div>
+    </div>
+  );
 }
-
-const mobile = localStorage.getItem("userMobile");
-document.getElementById("mobileDisplay").innerText = mobile || "Not Found";
-
-async function logoutUser() {
-  await supabase.auth.signOut();
-  localStorage.removeItem("userMobile");
-  window.location.href = "https://aaijijau-login.onrender.com"
-}
-
-document.getElementById("logoutBtn").addEventListener("click", logoutUser);
-<button id="loginBtn">Login</button>
