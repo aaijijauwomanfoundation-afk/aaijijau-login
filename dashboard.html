@@ -2,142 +2,108 @@
 <html lang="mr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Dashboard</title>
-
-<!-- Supabase CDN for logout -->
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-  window.supabase = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>डॅशबोर्ड</title>
 
 <style>
   body {
-    margin: 0;
-    background: #0a0f1f;
-    color: white;
     font-family: Poppins, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #0f172a;
+    color: white;
   }
   .container {
-    padding: 20px;
+    padding: 16px;
   }
   .card {
-    background: rgba(255,255,255,0.08);
-    border-radius: 14px;
+    background: #1e293b;
     padding: 16px;
+    border-radius: 14px;
     margin-bottom: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    backdrop-filter: blur(6px);
-  }
-  h1 {
-    font-size: 22px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   }
   .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
     gap: 12px;
   }
-  .grid .item {
-    background: rgba(255,255,255,0.12);
+  .grid-item {
+    background: #334155;
     padding: 14px;
     border-radius: 12px;
     text-align: center;
-    font-size: 15px;
-    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
   }
-  .btn {
-    width: 100%;
-    padding: 12px;
+  .grid-item:hover {
+    transform: translateY(-5px);
+    background: #475569;
+  }
+  .header {
+    background: #1e293b;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+  }
+  .header h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+  .logout-btn {
+    background: #ef4444;
+    padding: 8px 14px;
+    border-radius: 8px;
     border: none;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
   }
-  .btn-primary {
-    background: #4f46e5;
-    color: white;
-  }
-  .btn-danger {
-    background: #dc2626;
-    color: white;
-    margin-top: 18px;
-  }
-  .icon {
-    font-size: 24px;
-    margin-bottom: 6px;
-  }
 </style>
-
-<!-- येथे loading साठी पहिले keys ठेवू शकता -->
-<script>
-  window.SUPABASE_URL = "https://hjtmqutbqodicjupgsxn.supabase.co";
-  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4";
-</script>
-
 </head>
+
 <body>
+
+<div class="header">
+  <h2>🌺 स्वागत आहे, आपला डॅशबोर्ड</h2>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
 
 <div class="container">
 
-  <h1>🌺 आई जिजाऊ महिला सक्षमीकरण फाउंडेशन</h1>
-
   <div class="card">
-    <p>स्वागत आहे! तुम्ही यशस्वीपणे OTP द्वारे लॉगिन केले आहे ✅</p>
-    <button class="btn btn-primary" onclick="loadUser()">माझे प्रोफाइल</button>
+    <h3 style="margin-top:0">📊 NGO माहिती</h3>
+    <p id="userPhone">मोबाईल: Fetching...</p>
+    <p>Status: Active ✅</p>
   </div>
 
-  <div class="card">
-    <h1>📊 सेवा व उपक्रम</h1>
-    <div class="grid">
-      <div class="item"><div class="icon">👩‍🏫</div> प्रशिक्षण योजना</div>
-      <div class="item"><div class="icon">💼</div> रोजगार सहाय्य</div>
-      <div class="item"><div class="icon">🏭</div> गृह उद्योग</div>
-      <div class="item"><div class="icon">🚑</div> आपत्कालीन सेवा</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h1>📩 अर्ज / विनंती</h1>
-    <div class="grid">
-      <div class="item"><div class="icon">📄</div> GR पहा</div>
-      <div class="item"><div class="icon">📝</div> प्रस्ताव पाठवा</div>
-      <div class="item"><div class="icon">📊</div> रिपोर्ट सबमिट करा</div>
-      <div class="item"><div class="icon">🎫</div> ओळखपत्र</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h1>🔐 Account</h1>
-    <button class="btn btn-primary" onclick="logout()">Logout</button>
-    <p id="userStatus" style="margin-top:10px;font-size:14px;"></p>
+  <div class="grid">
+    <div class="grid-item" onclick="alert('Funding section लवकर येत आहे')">💰 CSR Funding</div>
+    <div class="grid-item" onclick="alert('Reports section लवकर येत आहे')">📄 Reports</div>
+    <div class="grid-item" onclick="alert('Beneficiaries लवकर येत आहे')">👩‍👧‍👦 Beneficiaries</div>
+    <div class="grid-item" onclick="alert('Settings लवकर येत आहे')">⚙ Settings</div>
   </div>
 
 </div>
 
 <script type="module">
-  const userStatus = document.getElementById("userStatus");
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+  const supabase = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
-  async function loadUser() {
-    const { data } = await window.supabase.auth.getSession();
-    if (data.session?.user?.phone) {
-      document.getElementById("userStatus").innerText = "📱 Login: " + data.session.user.phone;
-    } else {
-      document.getElementById("userStatus").innerText = "User not loaded!";
-    }
+  // Logged in phone दाखवा
+  const { data } = await supabase.auth.getSession();
+  if(data.session) {
+      document.getElementById("userPhone").innerText = "मोबाईल: " + data.session.user.phone;
   }
-  window.loadUser = loadUser;
 
+  // Logout function
   async function logout() {
-    await window.supabase.auth.signOut();
-    userStatus.innerText = "Logged out!";
-    setTimeout(() => {
-      window.location.href = "index.html";
-    }, 1000);
+     await supabase.auth.signOut();
+     window.location.href = "index.html";
   }
   window.logout = logout;
-
-  loadUser(); // Auto load
 </script>
 
 </body>
