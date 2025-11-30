@@ -1,40 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OTP Login</title>
 
-</script>
-   window.SUPABASE_URL = "https://hjtmqutbqodicjupgsxn.supabase.co";
-  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4";
-</script>
+<script type="module">
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// --- Supabase Config ---
-const SUPABASE_URL = window.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1NjYsImV4cCI6MjA3OTkzNTU2Nn0.NSm0ACU5YFc78e8Ck0PvCNLFaido3noRkJC_7vRMrrU;
-const SUPABASE_ANON_KEY = window.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4;
+const SUPABASE_URL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1NjYsImV4cCI6MjA3OTkzNTU2Nn0.NSm0ACU5YFc78e8Ck0PvCNLFaido3noRkJC_7vRMrrU";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4";
 
-if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-  console.error("❌ SUPABASE ENV Keys Missing!");
-  document.getElementById("status").innerText = "❌ Supabase Keys सेट केलेले नाही!";
-}
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+window.supabase = supabase;
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- Auto Session Check (Login Guard) ---
 async function checkSession() {
-  try {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      document.getElementById("status").innerText = "✅ आधीच लॉगिन आहे... Redirecting!";
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 1200);
-    } else {
-      document.getElementById("status").innerText = "🔐 लॉगिन करण्यासाठी OTP मागवा!";
-    }
-  } catch (err) {
-    document.getElementById("status").innerText = "❌ Session check error!";
-    console.error(err);
+  const { data } = await supabase.auth.getSession();
+  if (data.session) {
+    document.getElementById("status").innerText = "✅ आधीच लॉगिन आहे!";
+    window.location.href = "dashboard.html"; 
+  } else {
+    document.getElementById("status").innerText = "❌ लॉगिन नाही, OTP मागवा!";
+  }
+}
+window.checkSession = checkSession;
+checkSession();
+
+async function sendOTP() {
+  const mobile = document.getElementById("mobile").value;
+  if (!mobile || mobile.length < 10) {
+    document.getElementById("status").innerText = "⚠ कृपया 10 अंकी नंबर टाका!";
+    return;
+  }
+
+  localStorage.setItem("login.mobile", mobile);
+
+  const { error } = await supabase.auth.signInWithOtp({
+    phone: "+91" + mobile
+  });
+
+  if (error) {
+    document.getElementById("status").innerText = "❌ OTP Error: " + error.message;
+  } else {
+    document.getElementById("status").innerText = "📩 OTP पाठवला आहे! SMS तपासा.";
+    window.location.href = "otp.html"; 
   }
 }
 
-// Page load वर session तपासा
+document.getElementById("loginBtn").addEventListener("click", sendOTP);
+</script>
+</head>
+
+<body>
+<h2>OTP Login</h2>
+<input type="number" id="mobile" placeholder="Enter 10 digit number">
+<button id="loginBtn">Send OTP</button>
+<p id="status"></p>
+</body>
+</html>// Page load वर session तपासा
 checkSession();
 
 // --- Send OTP Function ---
