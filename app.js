@@ -1,42 +1,37 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+import React, { useState } from "react";
+import { supabase } from "./supabase";
 
-// Render ENV मधून key वापरली आहे
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+export default function App() {
+  const [email, setEmail] = useState("");
+  const [msg, setMsg] = useState("");
 
-// Session already आहे का ते तपासा
-async function checkSession() {
-  const { data } = await supabase.auth.getSession();
-  if (data.session) {
-    document.getElementById("status").innerText = "✅ आधीच लॉगिन आहे!";
-    window.location.href = "dashboard.html"; // लॉगिन असेल तर डॅशबोर्ड वर जा
-  } else {
-    document.getElementById("status").innerText = "❌ लॉगिन नाही, OTP मागवा!";
-  }
+  const sendOtp = async () => {
+    setMsg("⏳ Sending OTP...");
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) {
+      setMsg("❌ Error sending OTP!");
+      console.error(error);
+      return;
+    }
+    setMsg("✅ OTP Sent! Check your email.");
+    localStorage.setItem("userEmail", email);
+    window.location.href = "/otp"; // OTP page ला जा
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-screen bg-black text-white p-4">
+      <h2 className="text-2xl mb-6">NGO Login</h2>
+      <input
+        type="email"
+        placeholder="Enter Email"
+        className="p-2 w-80 rounded text-black"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <button onClick={sendOtp} className="mt-4 bg-green-600 px-6 py-2 rounded">
+        Send OTP
+      </button>
+      <p className="mt-5">{msg}</p>
+    </div>
+  );
 }
-window.checkSession = checkSession;
-
-// OTP (Passwordless login) request
-async function sendOTP() {
-  const mobile = document.getElementById("mobile").value;
-  if (!mobile || mobile.length < 10) {
-    document.getElementById("status").innerText = "⚠ कृपया 10 अंकी Mobile टाका!";
-    return;
-  }
-
-  const { error } = await supabase.auth.signInWithOtp({
-    phone: "+91" + mobile // India phone format
-  });
-
-  if (error) {
-    document.getElementById("status").innerText = "❌ OTP error: " + error.message;
-  } else {
-    document.getElementById("status").innerText = "📩 OTP पाठवला आहे! SMS तपासा.";
-  }
-}
-document.getElementById("loginBtn").addEventListener("click", sendOTP);
-
-// पेज load वर session check auto call
-checkSession();
