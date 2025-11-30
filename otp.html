@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Verify OTP</title>
+
+<!-- 👇 ह्या मध्येही keys लागतील कारण verify JS CDN module घेणार आहे -->
+<script>
+  window.SUPABASE_URL = "https://hjtmqutbqodicjupgsxn.supabase.co";
+  window.SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4";
+</script>
+
+</head>
+<body style="font-family:Arial;padding:20px;">
+
+<h2>OTP Verify करा</h2>
+
+<input id="otpInput" placeholder="6 अंकी OTP टाका" maxlength="6" />
+<button id="verifyBtn">Verify OTP</button>
+
+<p id="status">OTP टाका आणि Verify करा</p>
+
+<script type="module" src="otp.js"></script>
+</body>
+</html>
