@@ -1,40 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "./supabase";
+import { createClient } from "@supabase/supabase-js";
 
-export default function Otp() {
-  const [otp, setOtp] = useState("");
-  const [msg, setMsg] = useState("");
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-  const email = localStorage.getItem("userEmail");
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-  useEffect(() => {
-    if (!email) {
-      window.location.href = "/"; // email नसेल तर login ला परत जा
-    }
-  }, []);
+// OTP Verify + Redirect
+window.verifyOTP = async function () {
+  const otp = document.getElementById("otpInput").value.trim();
+  const phone = localStorage.getItem("userPhone");
 
-  const verifyOtp = async () => {
-    setMsg("⏳ Verifying OTP...");
-    const { data, error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp,
-      type: "email",
-    });
-    if (error) {
-      setMsg("❌ OTP Verification Failed!");
-      console.error(error);
-      return;
-    }
+  if (!otp || !phone) {
+    document.getElementById("status").innerText = "Phone or OTP missing!";
+    return;
+  }
 
-    if (data.session) {
-      localStorage.setItem("supabaseSession", JSON.stringify(data.session));
-      setMsg("✅ Login successful!");
-      window.location.href = "/dashboard"; // Dashboard ला जा
-    }
-  };
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone,
+    token: otp,
+    type: "sms",
+  });
 
-  return (
-    <div className="flex flex-col items-center justify-center h-screen bg-black text-white p-4">
+  if (error) {
+    document.getElementById("status").innerText = "Invalid OTP ❌";
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("status").innerText = "Login Successful ✅";
+  localStorage.removeItem("userPhone");
+  window.location.href = "/dashboard.html"; // redirect to dashboard
+};    <div className="flex flex-col items-center justify-center h-screen bg-black text-white p-4">
       <h2 className="text-2xl mb-6">Enter OTP</h2>
       <input
         type="text"
