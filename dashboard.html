@@ -1,110 +1,19 @@
-<!DOCTYPE html>
-<html lang="mr">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>डॅशबोर्ड</title>
+import { supabase } from "./supabase.js";
 
-<style>
-  body {
-    font-family: Poppins, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #0f172a;
-    color: white;
-  }
-  .container {
-    padding: 16px;
-  }
-  .card {
-    background: #1e293b;
-    padding: 16px;
-    border-radius: 14px;
-    margin-bottom: 16px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
-    gap: 12px;
-  }
-  .grid-item {
-    background: #334155;
-    padding: 14px;
-    border-radius: 12px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  .grid-item:hover {
-    transform: translateY(-5px);
-    background: #475569;
-  }
-  .header {
-    background: #1e293b;
-    padding: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #334155;
-  }
-  .header h2 {
-    margin: 0;
-    font-size: 18px;
-  }
-  .logout-btn {
-    background: #ef4444;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: none;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-  }
-</style>
-</head>
+const { data } = await supabase.auth.getSession();
 
-<body>
+if (!data.session) {
+  window.location.href = "https://aaijijau-login.onrender.com/dashboard.html "
+}
 
-<div class="header">
-  <h2>🌺 स्वागत आहे, आपला डॅशबोर्ड</h2>
-  <button class="logout-btn" onclick="logout()">Logout</button>
-</div>
+const mobile = localStorage.getItem("userMobile");
+document.getElementById("mobileDisplay").innerText = mobile || "Not Found";
 
-<div class="container">
+async function logoutUser() {
+  await supabase.auth.signOut();
+  localStorage.removeItem("userMobile");
+  window.location.href = "https://aaijijau-login.onrender.com"
+}
 
-  <div class="card">
-    <h3 style="margin-top:0">📊 NGO माहिती</h3>
-    <p id="userPhone">मोबाईल: Fetching...</p>
-    <p>Status: Active ✅</p>
-  </div>
-
-  <div class="grid">
-    <div class="grid-item" onclick="alert('Funding section लवकर येत आहे')">💰 CSR Funding</div>
-    <div class="grid-item" onclick="alert('Reports section लवकर येत आहे')">📄 Reports</div>
-    <div class="grid-item" onclick="alert('Beneficiaries लवकर येत आहे')">👩‍👧‍👦 Beneficiaries</div>
-    <div class="grid-item" onclick="alert('Settings लवकर येत आहे')">⚙ Settings</div>
-  </div>
-
-</div>
-
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
-  const supabase = createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-
-  // Logged in phone दाखवा
-  const { data } = await supabase.auth.getSession();
-  if(data.session) {
-      document.getElementById("userPhone").innerText = "मोबाईल: " + data.session.user.phone;
-  }
-
-  // Logout function
-  async function logout() {
-     await supabase.auth.signOut();
-     window.location.href = "index.html";
-  }
-  window.logout = logout;
-</script>
-
-</body>
-</html>
+document.getElementById("logoutBtn").addEventListener("click", logoutUser);
+<button id="loginBtn">Login</button>
