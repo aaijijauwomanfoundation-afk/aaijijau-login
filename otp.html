@@ -1,18 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OTP Verify</title>
+<meta charset="UTF-8">
+<title>Verify OTP</title>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const SUPABASE_URL = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1NjYsImV4cCI6MjA3OTkzNTU2Nn0.NSm0ACU5YFc78e8Ck0PvCNLFaido3noRkJC_7vRMrrU";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+async function verifyOTP() {
+  const otp = document.getElementById("otp").value;
+  const mobile = localStorage.getItem("login.mobile");
+
+  if (!otp || otp.length < 6) {
+    alert("6 अंकी OTP टाका ❗");
+    return;
+  }
+
+  const { data, error } = await supabase.auth.verifyOtp({
+    phone: "+91" + mobile,
+    token: otp,
+    type: "sms",
+  });
+
+  if (!error) {
+    alert("Login successful ✅");
+    localStorage.setItem("auth.user", JSON.stringify(data.user));
+    window.location.href = "dashboard.html";
+  } else {
+    alert("OTP चुकीचा आहे ❌");
+  }
+}
+
+document.getElementById("verifyBtn").addEventListener("click", verifyOTP);
+</script>
 </head>
+
 <body>
-
-<h2>Enter OTP</h2>
-<input type="text" id="otpInput" placeholder="6 digit OTP" maxlength="6"/>
-<button onclick="verifyOTP()">Verify OTP</button>
-
-<p id="status"></p>
-
-<script type="module" src="/src/otp.js"></script>
+<h2>OTP Verify</h2>
+<input type="number" id="otp" placeholder="Enter OTP">
+<button id="verifyBtn">Verify OTP</button>
 </body>
 </html>
