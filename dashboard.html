@@ -1,42 +1,57 @@
-import React, { useEffect, useState } from "react";
-import { supabase } from "./supabase";
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
 
-export default function Dashboard() {
-  const [user, setUser] = useState(null);
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        window.location.href = "/"; // login नसेल तर login ला परत जा
-      } else {
-        setUser(data.session.user);
-      }
-    };
-    checkSession();
-  }, []);
+const supabase = createClient(
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1NjYsImV4cCI6MjA3OTkzNTU2Nn0.NSm0ACU5YFc78e8Ck0PvCNLFaido3noRkJC_7vRMrrU",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4"
+);
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    localStorage.clear();
-    window.location.href = "/"; // logout नंतर login ला जा
-  };
-
-  return (
-    <div className="p-6 bg-black h-screen text-white">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl">Welcome, {user?.email}</h2>
-        <button onClick={logout} className="bg-red-600 px-5 py-2 rounded">
-          Logout
-        </button>
-      </div>
-
-      <div className="mt-10 grid grid-cols-2 gap-6">
-        <div className="bg-gray-800 p-4 rounded-lg">CSR Funding</div>
-        <div className="bg-gray-800 p-4 rounded-lg">Reports</div>
-        <div className="bg-gray-800 p-4 rounded-lg">Beneficiaries</div>
-        <div className="bg-gray-800 p-4 rounded-lg">Settings</div>
-      </div>
-    </div>
-  );
+async function protectPage() {
+  const { data } = await supabase.auth.getSession();
+  if (!data.session) {
+    alert("Please login first ❗");
+    window.location.href = "index.html";
+  }
 }
+protectPage();
+
+async function logoutUser() {
+  await supabase.auth.signOut();
+  localStorage.clear();
+  window.location.href = "index.html";
+}
+window.logoutUser = logoutUser;
+</script>
+</head>
+
+<body style="background:#0a192f; color:white; font-family:poppins;">
+
+<div style="display:flex; justify-content:space-between; padding:15px;">
+  <h3>🌺 स्वागत आहे, आपला डॅशबोर्ड</h3>
+  <button onclick="logoutUser()" 
+    style="background:red; padding:10px 20px; border:none; color:white; border-radius:8px;">
+    Logout
+  </button>
+</div>
+
+<div style="background:#112240; padding:20px; border-radius:12px; margin:15px;">
+  <h2>📊 NGO माहिती</h2>
+  <p>मोबाईल: Active ✅</p>
+  <p>Status: Verified ✔</p>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:15px;">
+  <div style="background:#233554; padding:15px; border-radius:12px;">💰 CSR Funding</div>
+  <div style="background:#233554; padding:15px; border-radius:12px;">📄 Reports</div>
+  <div style="background:#233554; padding:15px; border-radius:12px;">👩 Beneficiaries</div>
+  <div style="background:#233554; padding:15px; border-radius:12px;">⚙ Settings</div>
+</div>
+
+</body>
+</html>
