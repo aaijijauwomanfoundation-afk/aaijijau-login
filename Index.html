@@ -1,80 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Member Login</title>
-<style>
-body{
-    background:#111;
-    font-family: poppins;
-    color:white;
-}
+<body>
 
-.slider{
-    width:100%;
-    height:250px;
-    overflow:hidden;
-    border-radius:12px;
-    margin-bottom:20px;
-}
+  <!-- Login UI (तुमच्याकडे असेलच) -->
+  <input type="text" id="mobile" placeholder="मोबाईल नंबर" maxlength="10"/>
+  <button id="loginBtn">Send OTP</button>
+  <p id="status">Loading...</p>
 
-.slider img{
-    width:100%;
-    height:250px;
-    object-fit:cover;
-    animation: slide 6s infinite;
-}
-
-@keyframes slide{
-0%{transform:translateX(0);}
-50%{transform:translateX(-100%);}
-100%{transform:translateX(0);}
-}
-
-.loginBox{
-    padding:20px;
-    border-radius:15px;
-    background:#222;
-    text-align:center;
-    max-width:350px;
-    margin:auto;
-    box-shadow:0px 0px 15px #550;
-}
-
-input{
-    width:90%;
-    padding:10px;
-    margin:10px 0;
-    border-radius:8px;
-    border:none;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    border-radius:8px;
-    border:none;
-    background:#e6b800;
-    font-size:16px;
-    font-weight:600;
-}
-</style>
-</head>
-
-<body onload="checkSession()">
-<div class="slider">
-  <img src="https://i.postimg.cc/vmzsjZQy/na-dana-ara-ja-20251129-014605-0000.jpg">
-  <img src="https://i.postimg.cc/XY5N2WZt/na-dana-ara-ja-20251129-014629-0000.jpg">
-</div>
-
-<div class="loginBox">
-<h2>👩‍💼 सदस्य लॉगिन</h2>
-<input type="number" id="mobile" placeholder="मोबाईल नंबर टाका">
-<button id="loginBtn">Login / OTP मिळवा</button>
-<p id="status"></p>
-</div>
-
-<script type="module" src="app.js"></script>
+  <!-- JS file load इथे करा ✅ -->
+  <script type="module" src="login.js"></script>
 
 </body>
-</html>
