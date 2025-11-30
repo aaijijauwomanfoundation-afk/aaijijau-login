@@ -1,11 +1,77 @@
-<body>
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-  <!-- Login UI (तुमच्याकडे असेलच) -->
-  <input type="text" id="mobile" placeholder="मोबाईल नंबर" maxlength="10"/>
-  <button id="loginBtn">Send OTP</button>
-  <p id="status">Loading...</p>
+// HTML head मधून keys घेत आहोत
+const SUPABASE_URL = window.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQzNTk1NjYsImV4cCI6MjA3OTkzNTU2Nn0.NSm0ACU5YFc78e8Ck0PvCNLFaido3noRkJC_7vRMrrU;
+const SUPABASE_ANON_KEY = window.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdG1xdXRicW9kaWNqdXBnc3huIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDM1OTU2NiwiZXhwIjoyMDc5OTM1NTY2fQ.8RXY7u4gZyD3MIP7iN1bwwDkSqw15aD2jlQskfi5AS4;
 
-  <!-- JS file load इथे करा ✅ -->
-  <script type="module" src="login.js"></script>
+const statusEl = document.getElementById("status");
 
-</body>
+// जर keys नाहीत तर error दाखवा
+if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  console.error("❌ Supabase keys missing!");
+  if (statusEl) statusEl.innerText = "❌ SUPABASE Keys missing in HTML head!";
+}
+
+// Supabase client तयार करा
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Session तपासणी
+async function checkSession() {
+  if (!statusEl) return;
+  statusEl.innerText = "⏳ Session check…";
+
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+
+    if (data.session) {
+      statusEl.innerText = "✅ आधीच लॉगिन आहे, Dashboard ला जात आहे…";
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1200);
+    } else {
+      statusEl.innerText = "❌ लॉगिन नाही, OTP मागवा.";
+    }
+
+  } catch (err) {
+    console.error("Session error:", err);
+    statusEl.innerText = "❌ Session check failed!";
+  }
+}
+
+// OTP मागवणे (Passwordless Phone Login)
+async function sendOTP() {
+  if (!statusEl) return;
+  const mobile = document.getElementById("mobile")?.value;
+
+  if (!mobile || mobile.length !== 10) {
+    statusEl.innerText = "⚠ 10 अंकी Mobile नंबर टाका!";
+    return;
+  }
+
+  statusEl.innerText = "📩 OTP पाठवत आहोत…";
+
+  const { error } = await supabase.auth.signInWithOtp({
+    phone: "+91" + mobile,
+  });
+
+  if (error) {
+    console.error("OTP error:", error);
+    statusEl.innerText = "❌ OTP पाठवणे अयशस्वी!";
+  } else {
+    statusEl.innerText = "✅ OTP SMS पाठवला आहे, Verify पेजला जात आहे…";
+    setTimeout(() => {
+      window.location.href = "otp.html";
+    }, 1200);
+  }
+}
+
+// Button listener
+document.getElementById("loginBtn")?.addEventListener("click", sendOTP);
+
+// Auto run on page load
+checkSession();
+
+// हवे असल्यास बाहेरून कॉल करता यावा म्हणून attach
+window.sendOTP = sendOTP;
+window.checkSession = checkSession;
