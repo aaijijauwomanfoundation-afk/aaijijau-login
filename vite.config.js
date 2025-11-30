@@ -1,8 +1,8 @@
-import { defineConfig } from "vite";
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: "./",
+  publicDir: 'public', //https://aaijijau-login.onrender.com/dashboard.html
   build: {
-    outDir: "dist",
-  },
+    outDir: 'dist', // Render वर dist तयार होईल
+  }
 });
