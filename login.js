@@ -1,21 +1,14 @@
-import { supabase } from "./supabase.js";
+window.sendOTP = async function () {
+  const phone = document.getElementById("phoneInput").value.trim();
 
-async function loginUser() {
-  const mobile = document.getElementById("mobile").value;
-  const password = document.getElementById("password").value;
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: mobile + "@demo.com",  // mobile आधारित demo email बनवला आहे
-    password: password
-  });
+  const { error } = await supabase.auth.signInWithOtp({ phone });
 
   if (error) {
-    alert("Login failed: " + error.message);
+    status.innerText = "Failed to send OTP ❌";
     return;
   }
 
-  localStorage.setItem("userMobile", mobile);
-  window.location.href = "https://aaijijau-login.onrender.com/dashboard.html "; 
-}
-
-document.getElementById("loginBtn").addEventListener("click", loginUser);
+  localStorage.setItem("userPhone", phone); // ✅ फोन store करा
+  status.innerText = "OTP Sent ✅";
+  window.location.href = "/otp.html"; // ✅ OTP page ला जा
+};
